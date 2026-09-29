@@ -1,0 +1,113 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+    color: #222;
+}
+
+.contenedor {
+    max-width: 900px;
+    margin: 30px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.descripcion {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.opciones {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 14px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#botonCamara,
+#botonArchivo {
+    background: #e5e7eb;
+    color: #222;
+}
+
+#botonAnalizar {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    background: #2563eb;
+    color: white;
+    font-weight: bold;
+}
+
+#nombreArchivo {
+    text-align: center;
+    margin: 20px 0;
+    color: #555;
+}
+
+#resultado {
+    margin-top: 30px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border-bottom: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #f3f4f6;
+}
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .contenedor {
+        margin: 10px auto;
+        padding: 20px;
+    }
+
+    .opciones {
+        flex-direction: column;
+    }
+
+    .opciones button {
+        width: 100%;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+}

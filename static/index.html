@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Lector de Facturas</title>
+
+    <link rel="stylesheet" href="/static/styles.css?v=1">
+</head>
+
+<body>
+   <div class="contenedor">
+
+        <h1>Lector de Facturas</h1>
+        <p>
+            Sube una fotografía o un PDF de una factura.
+        </p>
+
+        <button type="button" id="botonArchivo">
+            📁 Subir JPG / PDF
+        </button>
+
+        <input
+            type="file"
+            id="archivo"
+            accept=".jpg,.jpeg,.png,.pdf"
+            hidden
+        >
+
+        <h3>O tomar una foto</h3>
+
+        <button type="button" id="botonCamara">
+            📷 Tomar foto
+        </button>
+
+        <input
+            type="file"
+            id="camara"
+            accept="image/*"
+            capture="environment"
+            hidden
+        >
+
+        <p id="nombreArchivo">
+            Ningún archivo seleccionado
+        </p>
+
+        <button id="botonAnalizar">
+            Analizar factura
+        </button>
+
+        <h2>Resultado</h2>
+
+        <div id="resultado">
+            Aquí aparecerá la información de la factura.
+        </div>
+
+        <script src="/static/app.js?v=222"></script>
+
+   </div>
+</body>
+
+</html>
