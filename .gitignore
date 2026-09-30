@@ -1,3 +1,6 @@
 .venv/
 .env
 __pycache__/*.pyc
+facturas.db
+static/app_backup.js
+static/app_antes_de_reparar.js
