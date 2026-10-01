@@ -260,6 +260,11 @@ async function verFactura(id) {
                 Editar factura
             </button>
 
+            <br><br>
+            <button type="button" onclick="eliminarFactura(${factura.id})">
+                Eliminar factura
+            </button>
+
             <button type="button" onclick="botonHistorial.click()">
                 Volver al historial
             </button>
@@ -587,3 +592,39 @@ async function guardarFactura(id) {
 
 
 
+async function eliminarFactura(id) {
+
+    const confirmar = confirm(
+        "¿Seguro que deseas eliminar esta factura?"
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    try {
+
+        const respuesta = await fetch(`/facturas/${id}`, {
+            method: "DELETE"
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(
+                datos.detail || "No se pudo eliminar la factura"
+            );
+        }
+
+        alert("Factura eliminada correctamente");
+
+        cargarHistorial();
+
+    } catch (error) {
+
+        console.error(error);
+
+        resultado.innerHTML =
+            `<p><strong>Error:</strong> ${error.message}</p>`;
+    }
+}

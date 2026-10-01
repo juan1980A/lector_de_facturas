@@ -345,3 +345,37 @@ def editar_factura(factura_id: int, datos: FacturaEditar):
 
     finally:
         db.close()
+
+@app.delete("/facturas/{factura_id}")
+def eliminar_factura(factura_id: int):
+
+    db = SessionLocal()
+
+    try:
+        factura = db.query(models.FacturaDB).filter(
+            models.FacturaDB.id == factura_id
+        ).first()
+
+        if not factura:
+            raise HTTPException(
+                status_code=404,
+                detail="Factura no encontrada"
+            )
+
+        db.delete(factura)
+        db.commit()
+
+        return {
+            "mensaje": "Factura eliminada correctamente"
+        }
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except Exception:
+        db.rollback()
+        raise
+
+    finally:
+        db.close()
