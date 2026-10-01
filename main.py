@@ -12,8 +12,9 @@ from fastapi.responses import FileResponse
 
 from sqlalchemy.orm import Session
 
-from database import SessionLocal
+from database import SessionLocal, engine, Base
 import models
+Base.metadata.create_all(bind=engine)
 
 
 
