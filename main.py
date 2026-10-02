@@ -38,6 +38,8 @@ class ItemFactura(BaseModel):
 class Factura(BaseModel):
     proveedor: str | None = None
     nit: str | None = None
+    cliente: str | None = None
+    documento: str | None = None
     numero_factura: str | None = None
     fecha: str | None = None
     subtotal: float | None = None
@@ -55,6 +57,8 @@ class ItemFacturaEditar(BaseModel):
 class FacturaEditar(BaseModel):
     proveedor: str | None = None
     nit: str | None = None
+    cliente: str | None = None
+    documento: str | None = None
     numero_factura: str | None = None
     fecha: str | None = None
     subtotal: float | None = None
@@ -122,7 +126,9 @@ Analiza cuidadosamente esta factura.
 Extrae la siguiente información:
 
 - nombre del proveedor
-- NIT
+- NIT del proveedor
+- nombre del cliente
+- documento del cliente (NIT, cédula u otro documento de identificación)
 - número de factura
 - fecha
 - subtotal
@@ -148,6 +154,8 @@ Utiliza exactamente esta estructura:
 {
     "proveedor": "",
     "nit": "",
+    "cliente": "",
+    "documento": "",
     "numero_factura": "",
     "fecha": "",
     "subtotal": 0,
@@ -187,6 +195,8 @@ No inventes información que no sea visible en la factura.
         factura_db = models.FacturaDB(
             proveedor=factura.proveedor,
             nit=factura.nit,
+            cliente=factura.cliente,
+            documento=factura.documento,
             numero_factura=factura.numero_factura,
             fecha=factura.fecha,
             subtotal=factura.subtotal,
@@ -233,6 +243,8 @@ def listar_facturas():
                 "id": factura.id,
                 "proveedor": factura.proveedor,
                 "nit": factura.nit,
+                "cliente": factura.cliente,
+                "documento": factura.documento,
                 "numero_factura": factura.numero_factura,
                 "fecha": factura.fecha,
                 "subtotal": factura.subtotal,
@@ -267,6 +279,8 @@ def obtener_factura(factura_id: int):
             "id": factura.id,
             "proveedor": factura.proveedor,
             "nit": factura.nit,
+            "cliente": factura.cliente,
+            "documento": factura.documento,
             "numero_factura": factura.numero_factura,
             "fecha": factura.fecha,
             "subtotal": factura.subtotal,
@@ -307,6 +321,8 @@ def editar_factura(factura_id: int, datos: FacturaEditar):
         # Actualizar datos generales
         factura_db.proveedor = datos.proveedor
         factura_db.nit = datos.nit
+        factura_db.cliente = datos.cliente
+        factura_db.documento = datos.documento
         factura_db.numero_factura = datos.numero_factura
         factura_db.fecha = datos.fecha
         factura_db.subtotal = datos.subtotal

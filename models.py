@@ -10,6 +10,10 @@ class FacturaDB(Base):
     id = Column(Integer, primary_key=True, index=True)
     proveedor = Column(String, nullable=True)
     nit = Column(String, nullable=True)
+
+    cliente = Column(String, nullable=True)
+    documento = Column(String, nullable=True)
+
     numero_factura = Column(String, nullable=True)
     fecha = Column(String, nullable=True)
     subtotal = Column(Float, nullable=True)

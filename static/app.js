@@ -89,6 +89,8 @@ botonAnalizar.addEventListener("click", async () => {
         resultado.innerHTML = `
             <p><strong>Proveedor:</strong> ${datos.proveedor}</p>
             <p><strong>NIT:</strong> ${datos.nit ?? "No encontrado"}</p>
+            <p><strong>Cliente:</strong> ${datos.cliente ?? "No encontrado"}</p>
+            <p><strong>Documento:</strong> ${datos.documento ?? "No encontrado"}</p>
             <p><strong>Factura:</strong> ${datos.numero_factura}</p>
             <p><strong>Fecha:</strong> ${datos.fecha}</p>
             <p><strong>Subtotal:</strong> $${datos.subtotal}</p>
@@ -231,6 +233,8 @@ async function verFactura(id) {
 
             <p><strong>Proveedor:</strong> ${factura.proveedor ?? ""}</p>
             <p><strong>NIT:</strong> ${factura.nit ?? ""}</p>
+            <p><strong>Cliente:</strong> ${factura.cliente ?? ""}</p>
+            <p><strong>Documento:</strong> ${factura.documento ?? ""}</p>
             <p><strong>Factura:</strong> ${factura.numero_factura ?? ""}</p>
             <p><strong>Fecha:</strong> ${factura.fecha ?? ""}</p>
             <p><strong>Subtotal:</strong> $${factura.subtotal ?? 0}</p>
@@ -362,6 +366,24 @@ async function editarFactura(id) {
                     type="text"
                     id="editarNit"
                     value="${factura.nit ?? ""}"
+                >
+            </p>
+
+            <p>
+                <strong>Cliente:</strong><br>
+                <input
+                    type="text"
+                    id="editarCliente"
+                    value="${factura.cliente ?? ""}"
+                >
+            </p>
+
+            <p>
+                <strong>Documento:</strong><br>
+                <input
+                    type="text"
+                    id="editarDocumento"
+                    value="${factura.documento ?? ""}"
                 >
             </p>
 
@@ -513,6 +535,12 @@ async function guardarFactura(id) {
 
         nit:
             document.getElementById("editarNit").value,
+
+        cliente:
+            document.getElementById("editarCliente").value,
+
+        documento:
+            document.getElementById("editarDocumento").value,
 
         numero_factura:
             document.getElementById("editarNumeroFactura").value,
