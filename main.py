@@ -1,6 +1,7 @@
 import os
 import base64
 import json
+import models
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile, File,  HTTPException
@@ -13,7 +14,12 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from database import SessionLocal, engine, Base
-import models
+
+from io import BytesIO
+
+from fastapi.responses import StreamingResponse
+from openpyxl import Workbook
+
 Base.metadata.create_all(bind=engine)
 
 
@@ -257,7 +263,101 @@ def listar_facturas():
     finally:
         db.close()
 
+@app.get("/facturas/exportar-excel")
+def exportar_facturas_excel():
 
+    db = SessionLocal()
+
+    try:
+        facturas = db.query(models.FacturaDB).order_by(
+            models.FacturaDB.id.asc()
+        ).all()
+
+        # Crear archivo Excel
+        wb = Workbook()
+
+        # =========================
+        # HOJA 1: FACTURAS
+        # =========================
+
+        ws_facturas = wb.active
+        ws_facturas.title = "Facturas"
+
+        ws_facturas.append([
+            "ID",
+            "Proveedor",
+            "NIT",
+            "Cliente",
+            "Documento",
+            "Número Factura",
+            "Fecha",
+            "Subtotal",
+            "IVA",
+            "Total"
+        ])
+
+        for factura in facturas:
+            ws_facturas.append([
+                factura.id,
+                factura.proveedor,
+                factura.nit,
+                factura.cliente,
+                factura.documento,
+                factura.numero_factura,
+                factura.fecha,
+                factura.subtotal,
+                factura.iva,
+                factura.total
+            ])
+
+        # =========================
+        # HOJA 2: PRODUCTOS
+        # =========================
+
+        ws_productos = wb.create_sheet("Productos")
+
+        ws_productos.append([
+            "Factura ID",
+            "Número Factura",
+            "Descripción",
+            "Cantidad",
+            "Precio Unitario",
+            "Total"
+        ])
+
+        for factura in facturas:
+
+            for item in factura.items:
+                ws_productos.append([
+                    factura.id,
+                    factura.numero_factura,
+                    item.descripcion,
+                    item.cantidad,
+                    item.precio_unitario,
+                    item.total
+                ])
+
+        # Crear Excel en memoria
+        archivo = BytesIO()
+
+        wb.save(archivo)
+
+        archivo.seek(0)
+
+        return StreamingResponse(
+            archivo,
+            media_type=(
+                "application/vnd.openxmlformats-officedocument."
+                "spreadsheetml.sheet"
+            ),
+            headers={
+                "Content-Disposition":
+                    'attachment; filename="facturas.xlsx"'
+            }
+        )
+
+    finally:
+        db.close()  
 
 
 @app.get("/facturas/{factura_id}")

@@ -3,9 +3,12 @@ const botonArchivo = document.getElementById("botonArchivo");
 const inputCamara = document.getElementById("camara");
 const botonCamara = document.getElementById("botonCamara");
 const botonAnalizar = document.getElementById("botonAnalizar");
+const botonExcel = document.getElementById("botonExcel");
 const botonHistorial = document.getElementById("botonHistorial");
 const resultado = document.getElementById("resultado");
 const nombreArchivo = document.getElementById("nombreArchivo");
+
+
 
 let archivoSeleccionado = null;
 
@@ -126,6 +129,11 @@ botonAnalizar.addEventListener("click", async () => {
     }
 
 });
+
+botonExcel.addEventListener("click", () => {
+    window.location.href = "/facturas/exportar-excel";
+});
+
 botonHistorial.addEventListener("click", async () => {
 
     resultado.textContent = "Cargando historial...";
