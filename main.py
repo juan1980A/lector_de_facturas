@@ -3,14 +3,19 @@ import base64
 import json
 import models
 
+from passlib.context import CryptContext
+
+from jose import jwt
+from datetime import datetime, timedelta, timezone
+
 from dotenv import load_dotenv
-from fastapi import FastAPI, UploadFile, File,  HTTPException
+from fastapi import FastAPI, UploadFile, File,  HTTPException, Depends, Header
 from anthropic import Anthropic
 from pydantic import BaseModel
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from database import SessionLocal, engine, Base
@@ -20,19 +25,112 @@ from io import BytesIO
 from fastapi.responses import StreamingResponse
 from openpyxl import Workbook
 
+
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
+)
+security = HTTPBearer()
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY no está configurada")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 20
+
+
+def crear_token(usuario_id: int):
+
+    expiracion = datetime.now(timezone.utc) + timedelta(
+        minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+    )
+
+    datos_token = {
+        "sub": str(usuario_id),
+        "exp": expiracion
+    }
+
+    token = jwt.encode(
+        datos_token,
+        SECRET_KEY,
+        algorithm=ALGORITHM
+    )
+
+    return token
+
+
+
+def obtener_usuario_actual(
+    credenciales: HTTPAuthorizationCredentials = Depends(security)
+):
+
+    token = credenciales.credentials
+
+    try:
+        datos = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        usuario_id = int(datos.get("sub"))
+
+    except Exception:
+        raise HTTPException(
+            status_code=401,
+            detail="Token inválido o expirado"
+        )
+
+    db = SessionLocal()
+
+    try:
+        usuario = db.query(models.UsuarioDB).filter(
+            models.UsuarioDB.id == usuario_id
+        ).first()
+
+        if not usuario:
+            raise HTTPException(
+                status_code=401,
+                detail="Usuario no encontrado"
+            )
+
+        return {
+            "id": usuario.id,
+            "nombre": usuario.nombre,
+            "email": usuario.email
+        }
+
+    finally:
+        db.close()
+
+
 Base.metadata.create_all(bind=engine)
 
 
 
-load_dotenv()
-
 app = FastAPI()
+
+
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 api_key=os.getenv("ANTHROPIC_API_KEY")
 
 client = Anthropic(api_key=api_key)
+
+
+
+class UsuarioRegistro(BaseModel):
+    nombre: str
+    email: str
+    password: str
+
+class UsuarioLogin(BaseModel):
+    email: str
+    password: str
 
 class ItemFactura(BaseModel):
     descripcion: str
@@ -78,8 +176,111 @@ def inicio():
     return FileResponse("static/index.html")
 
 
+@app.post("/registro")
+def registrar_usuario(datos: UsuarioRegistro):
+
+    db = SessionLocal()
+
+    try:
+        # Comprobar si el correo ya está registrado
+        usuario_existente = db.query(models.UsuarioDB).filter(
+            models.UsuarioDB.email == datos.email
+        ).first()
+
+        if usuario_existente:
+            raise HTTPException(
+                status_code=400,
+                detail="El correo ya está registrado"
+            )
+
+        # Convertir la contraseña en un hash
+        password_hash = pwd_context.hash(datos.password)
+
+        # Crear usuario
+        nuevo_usuario = models.UsuarioDB(
+            nombre=datos.nombre,
+            email=datos.email,
+            password_hash=password_hash
+        )
+
+        db.add(nuevo_usuario)
+        db.commit()
+        db.refresh(nuevo_usuario)
+
+        return {
+            "mensaje": "Usuario registrado correctamente",
+            "id": nuevo_usuario.id,
+            "nombre": nuevo_usuario.nombre,
+            "email": nuevo_usuario.email
+        }
+
+    finally:
+        db.close()
+
+
+@app.post("/login")
+def login(datos: UsuarioLogin):
+
+    db = SessionLocal()
+
+    try:
+        # Buscar usuario por correo
+        usuario = db.query(models.UsuarioDB).filter(
+            models.UsuarioDB.email == datos.email
+        ).first()
+
+        # Si no existe el usuario
+        if not usuario:
+            raise HTTPException(
+                status_code=401,
+                detail="Correo o contraseña incorrectos"
+            )
+
+        # Comprobar la contraseña
+        password_correcta = pwd_context.verify(
+            datos.password,
+            usuario.password_hash
+        )
+
+        if not password_correcta:
+            raise HTTPException(
+                status_code=401,
+                detail="Correo o contraseña incorrectos"
+            )
+
+        token = crear_token(usuario.id)
+
+        return {
+            "mensaje": "Inicio de sesión correcto",
+            "access_token": token,
+            "token_type": "bearer",
+            "usuario": {
+                "id": usuario.id,
+                "nombre": usuario.nombre,
+                "email": usuario.email
+            }
+        }
+
+    finally:
+        db.close()
+
+
+@app.get("/mi-cuenta")
+def mi_cuenta(
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    return {
+        "mensaje": "Usuario autenticado correctamente",
+        "usuario": usuario_actual
+    }
+
+
+
 @app.post("/facturas/analizar")
-async def analizar_factura(archivo: UploadFile = File(...)):
+async def analizar_factura(
+    archivo: UploadFile = File(...),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
 
     tipos_permitidos = [
     "image/jpeg",
@@ -199,6 +400,7 @@ No inventes información que no sea visible en la factura.
 
     try:
         factura_db = models.FacturaDB(
+            usuario_id=usuario_actual["id"],
             proveedor=factura.proveedor,
             nit=factura.nit,
             cliente=factura.cliente,
@@ -236,12 +438,14 @@ No inventes información que no sea visible en la factura.
         db.close()
 
 @app.get("/facturas")
-def listar_facturas():
+def listar_facturas(
+    usuario_actual = Depends(obtener_usuario_actual)
+):
     db = SessionLocal()
 
     try:
-        facturas = db.query(models.FacturaDB).order_by(
-            models.FacturaDB.id.desc()
+        facturas = db.query(models.FacturaDB).filter(
+            models.FacturaDB.usuario_id == usuario_actual["id"]
         ).all()
 
         return [
@@ -264,12 +468,16 @@ def listar_facturas():
         db.close()
 
 @app.get("/facturas/exportar-excel")
-def exportar_facturas_excel():
+def exportar_facturas_excel(
+    usuario_actual = Depends(obtener_usuario_actual)
+):
 
     db = SessionLocal()
 
     try:
-        facturas = db.query(models.FacturaDB).order_by(
+        facturas = db.query(models.FacturaDB).filter(
+            models.FacturaDB.usuario_id == usuario_actual["id"]
+        ).order_by(
             models.FacturaDB.id.asc()
         ).all()
 
@@ -361,12 +569,16 @@ def exportar_facturas_excel():
 
 
 @app.get("/facturas/{factura_id}")
-def obtener_factura(factura_id: int):
+def obtener_factura(
+    factura_id: int,
+    usuario_actual = Depends(obtener_usuario_actual)
+):
     db = SessionLocal()
 
     try:
         factura = db.query(models.FacturaDB).filter(
-            models.FacturaDB.id == factura_id
+            models.FacturaDB.id == factura_id,
+            models.FacturaDB.usuario_id == usuario_actual["id"]
         ).first()
 
         if not factura:
@@ -403,13 +615,18 @@ def obtener_factura(factura_id: int):
 
 
 @app.put("/facturas/{factura_id}")
-def editar_factura(factura_id: int, datos: FacturaEditar):
+def editar_factura(
+    factura_id: int,
+    datos: FacturaEditar,
+    usuario_actual = Depends(obtener_usuario_actual)
+):
 
     db = SessionLocal()
 
     try:
         factura_db = db.query(models.FacturaDB).filter(
-            models.FacturaDB.id == factura_id
+            models.FacturaDB.id == factura_id,
+            models.FacturaDB.usuario_id == usuario_actual["id"]
         ).first()
 
         if not factura_db:
@@ -463,13 +680,17 @@ def editar_factura(factura_id: int, datos: FacturaEditar):
         db.close()
 
 @app.delete("/facturas/{factura_id}")
-def eliminar_factura(factura_id: int):
+def eliminar_factura(
+    factura_id: int,
+    usuario_actual = Depends(obtener_usuario_actual)
+):
 
     db = SessionLocal()
 
     try:
         factura = db.query(models.FacturaDB).filter(
-            models.FacturaDB.id == factura_id
+            models.FacturaDB.id == factura_id,
+            models.FacturaDB.usuario_id == usuario_actual["id"]
         ).first()
 
         if not factura:

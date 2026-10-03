@@ -5,12 +5,60 @@ const botonCamara = document.getElementById("botonCamara");
 const botonAnalizar = document.getElementById("botonAnalizar");
 const botonExcel = document.getElementById("botonExcel");
 const botonHistorial = document.getElementById("botonHistorial");
+const botonLogin = document.getElementById("botonLogin");
 const resultado = document.getElementById("resultado");
 const nombreArchivo = document.getElementById("nombreArchivo");
 
 
 
 let archivoSeleccionado = null;
+
+
+
+botonLogin.addEventListener("click", async () => {
+
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+    const mensajeLogin = document.getElementById("mensajeLogin");
+
+    try {
+
+        const respuesta = await fetch("/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            mensajeLogin.textContent =
+                datos.detail || "No se pudo iniciar sesión";
+            return;
+        }
+
+        localStorage.setItem(
+            "access_token",
+            datos.access_token
+        );
+
+        mensajeLogin.textContent =
+            "Bienvenido " + datos.usuario.nombre;
+
+    } catch (error) {
+
+        console.error(error);
+
+        mensajeLogin.textContent =
+            "Error al conectar con el servidor";
+    }
+});
+
 
 
 botonCamara.addEventListener("click", () => {
@@ -44,6 +92,9 @@ inputArchivo.addEventListener("change", () => {
 
 archivoSeleccionado = inputArchivo.files[0];
 
+
+
+
 botonAnalizar.addEventListener("click", async () => {
 
     const archivo = archivoSeleccionado;
@@ -61,8 +112,13 @@ botonAnalizar.addEventListener("click", async () => {
 
     try {
 
+        const token = localStorage.getItem("access_token");
+
         const respuesta = await fetch("/facturas/analizar", {
             method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
             body: formData
         });
 
@@ -130,8 +186,43 @@ botonAnalizar.addEventListener("click", async () => {
 
 });
 
-botonExcel.addEventListener("click", () => {
-    window.location.href = "/facturas/exportar-excel";
+botonExcel.addEventListener("click", async () => {
+
+    const token = localStorage.getItem("access_token");
+
+    try {
+
+        const respuesta = await fetch("/facturas/exportar-excel", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!respuesta.ok) {
+            throw new Error("No se pudo descargar el Excel");
+        }
+
+        const archivo = await respuesta.blob();
+
+        const url = URL.createObjectURL(archivo);
+
+        const enlace = document.createElement("a");
+        enlace.href = url;
+        enlace.download = "facturas.xlsx";
+
+        document.body.appendChild(enlace);
+        enlace.click();
+        enlace.remove();
+
+        URL.revokeObjectURL(url);
+
+    } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+
+    }
+
 });
 
 botonHistorial.addEventListener("click", async () => {
@@ -140,7 +231,15 @@ botonHistorial.addEventListener("click", async () => {
 
     try {
 
-        const respuesta = await fetch("/facturas");
+        const token = localStorage.getItem("access_token");
+
+        console.log("TOKEN:", token);
+
+        const respuesta = await fetch("/facturas", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
 
         if (!respuesta.ok) {
             throw new Error("No se pudo cargar el historial");
@@ -213,7 +312,13 @@ async function verFactura(id) {
 
     try {
 
-        const respuesta = await fetch(`/facturas/${id}`);
+        const token = localStorage.getItem("access_token");
+
+        const respuesta = await fetch(`/facturas/${id}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`  
+            }
+        });
 
         if (!respuesta.ok) {
             throw new Error("No se pudo cargar la factura");
@@ -299,7 +404,13 @@ async function editarFactura(id) {
 
     try {
 
-        const respuesta = await fetch(`/facturas/${id}`);
+        const token = localStorage.getItem("access_token");
+
+        const respuesta = await fetch(`/facturas/${id}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
 
         if (!respuesta.ok) {
             throw new Error("No se pudo cargar la factura");
@@ -580,17 +691,21 @@ async function guardarFactura(id) {
 
     try {
 
-        const respuesta = await fetch(`/facturas/${id}`, {
+            const token = localStorage.getItem("access_token");
 
-            method: "PUT",
+            const respuesta = await fetch(`/facturas/${id}`, {
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+                method: "PUT",
 
-            body: JSON.stringify(datos)
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
 
-        });
+                body: JSON.stringify(datos)
+
+            });
+
 
 
         const respuestaDatos = await respuesta.json();
@@ -640,8 +755,13 @@ async function eliminarFactura(id) {
 
     try {
 
+        const token = localStorage.getItem("access_token");
+
         const respuesta = await fetch(`/facturas/${id}`, {
-            method: "DELETE"
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         });
 
         const datos = await respuesta.json();
