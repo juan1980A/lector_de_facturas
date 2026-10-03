@@ -5,7 +5,7 @@ const botonCamara = document.getElementById("botonCamara");
 const botonAnalizar = document.getElementById("botonAnalizar");
 const botonExcel = document.getElementById("botonExcel");
 const botonHistorial = document.getElementById("botonHistorial");
-const botonLogin = document.getElementById("botonLogin");
+
 const resultado = document.getElementById("resultado");
 const nombreArchivo = document.getElementById("nombreArchivo");
 
@@ -13,6 +13,120 @@ const nombreArchivo = document.getElementById("nombreArchivo");
 
 let archivoSeleccionado = null;
 
+const botonRegistro = document.getElementById("botonRegistro");
+const botonLogin = document.getElementById("botonLogin");
+const mostrarRegistro = document.getElementById("mostrarRegistro");
+const seccionLogin = document.getElementById("seccionLogin");
+const seccionRegistro = document.getElementById("seccionRegistro");
+
+const botonCerrarSesion =
+    document.getElementById("botonCerrarSesion");
+
+
+
+async function comprobarSesion() {
+
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        return;
+    }
+
+    try {
+
+        const respuesta = await fetch("/mi-cuenta", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!respuesta.ok) {
+            localStorage.removeItem("access_token");
+            return;
+        }
+
+        const usuario = await respuesta.json()
+        console.log("USUARIO MI CUENTA:", usuario);
+
+        seccionLogin.style.display = "none";
+        seccionRegistro.style.display = "none";
+
+        document.getElementById("seccionUsuario").style.display = "block";
+
+        document.getElementById("bienvenidaUsuario").textContent =
+            "Bienvenido, " + usuario.usuario.nombre;;
+
+        document.getElementById("aplicacion").style.display = "block";
+
+    } catch (error) {
+
+        console.error("Error comprobando sesión:", error);
+
+    }
+}
+
+comprobarSesion();
+
+
+mostrarRegistro.addEventListener("click", () => {
+
+    seccionLogin.style.display = "none";
+    seccionRegistro.style.display = "block";
+
+});
+
+botonRegistro.addEventListener("click", async () => {
+
+    const nombre = document.getElementById("registroNombre").value;
+    const email = document.getElementById("registroEmail").value;
+    const password = document.getElementById("registroPassword").value;
+    const mensajeRegistro = document.getElementById("mensajeRegistro");
+    
+    if (!nombre.trim() || !email.trim() || !password.trim()) {
+
+        mensajeRegistro.textContent =
+            "Debes completar nombre, correo y contraseña.";
+        return;
+    }
+
+    try {
+
+        const respuesta = await fetch("/registro", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nombre: nombre,
+                email: email,
+                password: password
+            })
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            mensajeRegistro.textContent =
+                datos.detail || "No se pudo crear la cuenta";
+            return;
+        }
+
+        mensajeRegistro.textContent =
+            "Cuenta creada correctamente. Ya puedes iniciar sesión.";
+
+        document.getElementById("seccionRegistro").style.display = "none";
+
+        document.getElementById("seccionLogin").style.display = "block";
+
+    } catch (error) {
+
+        console.error(error);
+
+        mensajeRegistro.textContent =
+            "Error al conectar con el servidor";
+    }
+
+});
 
 
 botonLogin.addEventListener("click", async () => {
@@ -20,6 +134,12 @@ botonLogin.addEventListener("click", async () => {
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
     const mensajeLogin = document.getElementById("mensajeLogin");
+
+    if (!email.trim() || !password.trim()) {
+        mensajeLogin.textContent =
+            "Debes ingresar correo y contraseña.";
+        return;
+    }
 
     try {
 
@@ -47,8 +167,14 @@ botonLogin.addEventListener("click", async () => {
             datos.access_token
         );
 
-        mensajeLogin.textContent =
-            "Bienvenido " + datos.usuario.nombre;
+        seccionLogin.style.display = "none";
+
+        document.getElementById("seccionUsuario").style.display = "block";
+
+        document.getElementById("bienvenidaUsuario").textContent =
+            "Bienvenido, " + datos.usuario.nombre;
+
+        document.getElementById("aplicacion").style.display = "block";
 
     } catch (error) {
 
@@ -59,6 +185,25 @@ botonLogin.addEventListener("click", async () => {
     }
 });
 
+
+botonCerrarSesion.addEventListener("click", () => {
+
+    // Borrar el token
+    localStorage.removeItem("access_token");
+
+    // Ocultar usuario y aplicación
+    document.getElementById("seccionUsuario").style.display = "none";
+    document.getElementById("aplicacion").style.display = "none";
+
+    // Mostrar nuevamente el login
+    seccionLogin.style.display = "block";
+
+    // Limpiar contraseña y mensajes
+    document.getElementById("loginEmail").value = "";
+    document.getElementById("loginPassword").value = "";
+    document.getElementById("mensajeLogin").textContent = "";
+    
+});
 
 
 botonCamara.addEventListener("click", () => {

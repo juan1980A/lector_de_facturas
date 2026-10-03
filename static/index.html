@@ -14,29 +14,71 @@
 
     <div id="seccionLogin">
 
-    <h2>Iniciar sesión</h2>
+        <h2>Iniciar sesión</h2>
 
-    <input
-        type="email"
-        id="loginEmail"
-        placeholder="Correo electrónico"
-    >
+        <input
+            type="email"
+            id="loginEmail"
+            placeholder="Correo electrónico"
+        >
 
-    <input
-        type="password"
-        id="loginPassword"
-        placeholder="Contraseña"
-    >
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Contraseña"
+        >
 
-    <button id="botonLogin" type="button">
-        Iniciar sesión
-    </button>
+        <button id="botonLogin" type="button">
+            Iniciar sesión
+        </button>
 
-    <p id="mensajeLogin"></p>
+        <p id="mensajeLogin"></p>
 
-</div>
+        <button id="mostrarRegistro" type="button">
+            Crear una cuenta
+        </button>
 
-   <div class="contenedor">
+    </div>
+
+    <div id="seccionRegistro" style="display: none;">
+
+        <h2>Crear cuenta</h2>
+
+        <input
+            type="text"
+            id="registroNombre"
+            placeholder="Nombre"
+        >
+
+        <input
+            type="email"
+            id="registroEmail"
+            placeholder="Correo electrónico"
+        >
+
+        <input
+            type="password"
+            id="registroPassword"
+            placeholder="Contraseña"
+        >
+
+        <button id="botonRegistro" type="button">
+            Crear cuenta
+        </button>
+
+        <p id="mensajeRegistro"></p>
+
+    </div>
+
+    <div id="seccionUsuario" style="display: none;">
+        <p id="bienvenidaUsuario"></p>
+
+        <button id="botonCerrarSesion" type="button">
+            Cerrar sesión
+        </button>
+    </div>
+
+   <div id="aplicacion" class="contenedor" style="display: none;">
 
         <h1>Lector de Facturas</h1>
         <p>

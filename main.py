@@ -25,6 +25,8 @@ from io import BytesIO
 from fastapi.responses import StreamingResponse
 from openpyxl import Workbook
 
+from sqlalchemy.exc import IntegrityError
+
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
@@ -182,9 +184,19 @@ def registrar_usuario(datos: UsuarioRegistro):
     db = SessionLocal()
 
     try:
-        # Comprobar si el correo ya está registrado
+
+        nombre = datos.nombre.strip()
+        email = datos.email.strip().lower()
+        password = datos.password.strip()
+
+        if not nombre or not email or not password:
+            raise HTTPException(
+                status_code=400,
+                detail="Debes completar nombre, correo y contraseña"
+            )
+
         usuario_existente = db.query(models.UsuarioDB).filter(
-            models.UsuarioDB.email == datos.email
+            models.UsuarioDB.email == email
         ).first()
 
         if usuario_existente:
@@ -193,13 +205,11 @@ def registrar_usuario(datos: UsuarioRegistro):
                 detail="El correo ya está registrado"
             )
 
-        # Convertir la contraseña en un hash
-        password_hash = pwd_context.hash(datos.password)
+        password_hash = pwd_context.hash(password)
 
-        # Crear usuario
         nuevo_usuario = models.UsuarioDB(
-            nombre=datos.nombre,
-            email=datos.email,
+            nombre=nombre,
+            email=email,
             password_hash=password_hash
         )
 
@@ -214,8 +224,20 @@ def registrar_usuario(datos: UsuarioRegistro):
             "email": nuevo_usuario.email
         }
 
+    except IntegrityError as error:
+
+        db.rollback()
+
+        print("ERROR DE REGISTRO:", error)
+
+        raise HTTPException(
+            status_code=400,
+            detail="Error al crear el usuario"
+        )
+
     finally:
         db.close()
+
 
 
 @app.post("/login")
