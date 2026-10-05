@@ -1,113 +1,834 @@
+/* =====================================================
+   LECTOR DE FACTURAS
+   Diseño base web + móvil
+===================================================== */
+
 * {
     box-sizing: border-box;
 }
 
+html,
 body {
     margin: 0;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    background: #f3f4f6;
-    color: #222;
+    padding: 0;
+    min-height: 100%;
 }
 
-.contenedor {
-    max-width: 900px;
-    margin: 30px auto;
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #172033;
 }
 
-h1 {
+button,
+input {
+    font-family: inherit;
+}
+
+
+/* =====================================================
+   LOGIN Y REGISTRO
+===================================================== */
+
+.pantalla-auth {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+}
+
+.auth-contenedor {
+    width: 100%;
+    max-width: 420px;
+}
+
+.auth-logo {
     text-align: center;
-    margin-bottom: 10px;
-}
-
-.descripcion {
-    text-align: center;
-    color: #666;
     margin-bottom: 30px;
 }
 
-.opciones {
+.icono-factura {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 18px;
+
     display: flex;
-    gap: 15px;
+    align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
+
+    background: #0d6efd;
+    color: white;
+
+    font-size: 38px;
+    font-weight: bold;
+
+    border-radius: 18px;
 }
 
-button {
-    border: none;
-    border-radius: 8px;
-    padding: 14px 20px;
+.auth-logo h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.auth-subtitulo {
+    margin: 10px 0 0;
+    color: #64748b;
     font-size: 16px;
+    line-height: 1.5;
+}
+
+.auth-tarjeta {
+    background: white;
+    padding: 28px;
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.08);
+}
+
+.auth-tarjeta h2 {
+    margin: 0 0 24px;
+    font-size: 23px;
+}
+
+.auth-tarjeta label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.auth-tarjeta input {
+    width: 100%;
+    height: 52px;
+
+    margin-bottom: 18px;
+    padding: 0 15px;
+
+    border: 1px solid #d8dee9;
+    border-radius: 12px;
+
+    background: white;
+
+    font-size: 16px;
+
+    outline: none;
+}
+
+.auth-tarjeta input:focus {
+    border-color: #0d6efd;
+
+    box-shadow:
+        0 0 0 3px rgba(13, 110, 253, 0.12);
+}
+
+.boton-principal {
+    width: 100%;
+    min-height: 52px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: #0d6efd;
+    color: white;
+
+    font-size: 16px;
+    font-weight: 600;
+
     cursor: pointer;
 }
 
-#botonCamara,
-#botonArchivo {
-    background: #e5e7eb;
-    color: #222;
+.boton-principal:hover {
+    background: #0b5ed7;
 }
 
-#botonAnalizar {
-    display: block;
+.boton-secundario {
     width: 100%;
-    margin-top: 20px;
-    background: #2563eb;
-    color: white;
-    font-weight: bold;
+    min-height: 50px;
+
+    border: 1px solid #0d6efd;
+    border-radius: 12px;
+
+    background: white;
+    color: #0d6efd;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
 }
 
-#nombreArchivo {
+.separador-auth {
+    margin: 22px 0 14px;
+
     text-align: center;
-    margin: 20px 0;
-    color: #555;
+
+    color: #64748b;
+    font-size: 14px;
+}
+
+.mensaje-auth {
+    margin: 15px 0 0;
+
+    text-align: center;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   USUARIO
+   Por ahora sigue fuera de la cabecera.
+   Después lo integraremos.
+===================================================== */
+
+#seccionUsuario {
+    max-width: 700px;
+    margin: 15px auto 0;
+    padding: 0 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+#bienvenidaUsuario {
+    margin: 0;
+    font-weight: 600;
+}
+
+#botonCerrarSesion {
+    padding: 10px 15px;
+
+    border: 1px solid #d8dee9;
+    border-radius: 10px;
+
+    background: white;
+    color: #334155;
+
+    cursor: pointer;
+}
+
+
+/* =====================================================
+   APLICACIÓN
+===================================================== */
+
+.app-movil {
+    min-height: 100vh;
+    background: #f4f7fb;
+}
+
+
+/* CABECERA */
+
+.app-header {
+    width: 100%;
+
+    background: #0d6efd;
+    color: white;
+
+    padding: 16px 20px;
+
+    box-shadow:
+        0 2px 12px rgba(13, 110, 253, 0.15);
+}
+
+.app-marca {
+    width: 100%;
+    max-width: 700px;
+
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.app-icono {
+    width: 44px;
+    height: 44px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.18);
+
+    border-radius: 12px;
+
+    font-size: 25px;
+}
+
+.app-marca strong {
+    display: block;
+
+    font-size: 18px;
+}
+
+.app-marca span {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 13px;
+
+    opacity: 0.85;
+}
+
+
+/* =====================================================
+   CONTENIDO
+===================================================== */
+
+.app-contenido {
+    width: 100%;
+    max-width: 700px;
+
+    margin: 0 auto;
+
+    padding: 28px 20px 100px;
+}
+
+
+/* =====================================================
+   NUEVA FACTURA
+===================================================== */
+
+.nueva-factura {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.nueva-factura h1 {
+    margin: 0 0 8px;
+
+    text-align: left;
+
+    font-size: 26px;
+}
+
+.descripcion {
+    margin: 0 0 25px;
+
+    text-align: left;
+
+    color: #64748b;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   TOMAR FOTO / SUBIR ARCHIVO
+===================================================== */
+
+.opciones-carga {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+.opcion-carga {
+    width: 100%;
+    min-height: 135px;
+
+    padding: 15px;
+
+    border: none;
+    border-radius: 18px;
+
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    font-size: 15px;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.opcion-carga:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.07);
+}
+
+.opcion-carga strong {
+    font-size: 16px;
+}
+
+.opcion-carga small {
+    color: #64748b;
+}
+
+.opcion-icono {
+    font-size: 34px;
+}
+
+.opcion-camara {
+    background: #eef5ff;
+    color: #0d6efd;
+}
+
+.opcion-archivo {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+
+/* =====================================================
+   ARCHIVO SELECCIONADO
+===================================================== */
+
+.archivo-seleccionado {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 18px;
+    padding: 14px 16px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 13px;
+}
+
+.archivo-seleccionado p {
+    min-width: 0;
+
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   ANALIZAR
+===================================================== */
+
+.boton-analizar {
+    width: 100%;
+    min-height: 54px;
+
+    margin-top: 18px;
+    padding: 12px 18px;
+
+    border: none;
+    border-radius: 13px;
+
+    background: #0d6efd;
+    color: white;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.boton-analizar:hover {
+    background: #0b5ed7;
+}
+
+
+/* =====================================================
+   HISTORIAL / EXPORTAR
+===================================================== */
+
+.acciones-secundarias {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+
+    margin-top: 16px;
+}
+
+.boton-accion {
+    width: 100%;
+    min-height: 55px;
+
+    padding: 12px;
+
+    background: white;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 13px;
+
+    color: #334155;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.boton-accion:hover {
+    background: #f8fafc;
+}
+
+.boton-accion span {
+    margin-right: 6px;
+}
+
+
+/* =====================================================
+   RESULTADO
+===================================================== */
+
+.resultado-contenedor {
+    margin-top: 25px;
+
+    background: white;
+
+    padding: 22px;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.resultado-contenedor h2 {
+    margin: 0 0 15px;
+
+    font-size: 20px;
 }
 
 #resultado {
-    margin-top: 30px;
+    width: 100%;
+
+    overflow-x: auto;
 }
+
+
+/* =====================================================
+   TABLAS
+===================================================== */
 
 table {
     width: 100%;
+
+    margin-top: 18px;
+
     border-collapse: collapse;
-    margin-top: 20px;
 }
 
 th,
 td {
-    border-bottom: 1px solid #ddd;
-    padding: 12px;
+    padding: 12px 10px;
+
+    border-bottom: 1px solid #e2e8f0;
+
     text-align: left;
 }
 
 th {
-    background: #f3f4f6;
+    background: #f8fafc;
+
+    color: #475569;
+
+    font-size: 14px;
 }
 
-@media (max-width: 600px) {
 
-    body {
-        padding: 10px;
+/* =====================================================
+   CAMPOS QUE APP.JS PUEDA CREAR
+===================================================== */
+
+#resultado input {
+    width: 100%;
+
+    padding: 10px;
+
+    border: 1px solid #d8dee9;
+    border-radius: 8px;
+
+    font-size: 14px;
+}
+
+#resultado button {
+    padding: 10px 14px;
+
+    border: none;
+    border-radius: 9px;
+
+    cursor: pointer;
+}
+
+
+/* =====================================================
+   MÓVIL
+===================================================== */
+
+@media (max-width: 480px) {
+
+    .pantalla-auth {
+        align-items: flex-start;
+
+        padding: 40px 18px;
     }
 
-    .contenedor {
-        margin: 10px auto;
+    .auth-logo {
+        margin-bottom: 24px;
+    }
+
+    .icono-factura {
+        width: 62px;
+        height: 62px;
+
+        font-size: 32px;
+    }
+
+    .auth-logo h1 {
+        font-size: 26px;
+    }
+
+    .auth-tarjeta {
+        padding: 22px;
+
+        border-radius: 18px;
+    }
+
+
+    /* USUARIO */
+
+    #seccionUsuario {
+        margin-top: 10px;
+
+        padding: 0 15px;
+
+        font-size: 14px;
+    }
+
+    #botonCerrarSesion {
+        padding: 8px 11px;
+
+        font-size: 13px;
+    }
+
+
+    /* APP */
+
+    .app-header {
+        padding: 14px 18px;
+    }
+
+    .app-contenido {
+        padding: 20px 15px 90px;
+    }
+
+    .nueva-factura {
         padding: 20px;
+
+        border-radius: 18px;
     }
 
-    .opciones {
-        flex-direction: column;
+    .nueva-factura h1 {
+        font-size: 24px;
     }
 
-    .opciones button {
-        width: 100%;
+    .descripcion {
+        font-size: 15px;
+    }
+
+    .opcion-carga {
+        min-height: 125px;
+
+        padding: 12px;
+    }
+
+    .opcion-icono {
+        font-size: 30px;
+    }
+
+    .opcion-carga strong {
+        font-size: 15px;
+    }
+
+    .opcion-carga small {
+        font-size: 12px;
+    }
+
+    .resultado-contenedor {
+        padding: 18px;
     }
 
     table {
+        min-width: 550px;
+
         font-size: 13px;
+    }
+
+}
+
+
+/* USUARIO EN CABECERA */
+
+.app-header-contenido {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.app-header-contenido .app-marca {
+    margin: 0;
+    width: auto;
+}
+
+.usuario-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.usuario-header #bienvenidaUsuario {
+    margin: 0;
+    padding: 0;
+
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.usuario-header #botonCerrarSesion {
+    margin: 0;
+    padding: 9px 13px;
+
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 9px;
+
+    background: rgba(255,255,255,0.15);
+    color: white;
+
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.usuario-header #botonCerrarSesion:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+
+/* CORRECCIÓN USUARIO EN CABECERA */
+
+.app-header-contenido #seccionUsuario {
+    width: auto;
+    max-width: none;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 12px;
+}
+
+.app-header-contenido #bienvenidaUsuario {
+    margin: 0;
+    padding: 0;
+
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.app-header-contenido #botonCerrarSesion {
+    margin: 0;
+    padding: 9px 13px;
+
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 9px;
+
+    font-size: 13px;
+}
+
+/* CELULAR */
+
+@media (max-width: 480px) {
+
+    .app-header-contenido {
+        gap: 10px;
+    }
+
+    .app-marca span {
+        display: none;
+    }
+
+    .usuario-header {
+        gap: 7px;
+    }
+
+    .usuario-header #bienvenidaUsuario {
+        font-size: 12px;
+    }
+
+    .usuario-header #botonCerrarSesion {
+        padding: 7px 9px;
+        font-size: 12px;
+    }
+}
+
+
+/* =====================================================
+   TELÉFONOS MUY ESTRECHOS
+===================================================== */
+
+@media (max-width: 350px) {
+
+    .opciones-carga {
+        grid-template-columns: 1fr;
     }
 
 }

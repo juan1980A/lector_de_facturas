@@ -7,134 +7,350 @@
 
     <title>Lector de Facturas</title>
 
-    <link rel="stylesheet" href="/static/styles.css?v=1">
+    <link rel="stylesheet" href="/static/styles.css?v=533">
 </head>
 
 <body>
 
-    <div id="seccionLogin">
+    <!-- =========================
+     INICIO DE SESIÓN
+========================= -->
 
-        <h2>Iniciar sesión</h2>
+<div id="seccionLogin" class="pantalla-auth">
 
-        <input
-            type="email"
-            id="loginEmail"
-            placeholder="Correo electrónico"
-        >
+    <div class="auth-contenedor">
 
-        <input
-            type="password"
-            id="loginPassword"
-            placeholder="Contraseña"
-        >
+        <div class="auth-logo">
+            <div class="icono-factura">▤</div>
 
-        <button id="botonLogin" type="button">
-            Iniciar sesión
-        </button>
+            <h1>Lector de Facturas</h1>
 
-        <p id="mensajeLogin"></p>
-
-        <button id="mostrarRegistro" type="button">
-            Crear una cuenta
-        </button>
-
-    </div>
-
-    <div id="seccionRegistro" style="display: none;">
-
-        <h2>Crear cuenta</h2>
-
-        <input
-            type="text"
-            id="registroNombre"
-            placeholder="Nombre"
-        >
-
-        <input
-            type="email"
-            id="registroEmail"
-            placeholder="Correo electrónico"
-        >
-
-        <input
-            type="password"
-            id="registroPassword"
-            placeholder="Contraseña"
-        >
-
-        <button id="botonRegistro" type="button">
-            Crear cuenta
-        </button>
-
-        <p id="mensajeRegistro"></p>
-
-    </div>
-
-    <div id="seccionUsuario" style="display: none;">
-        <p id="bienvenidaUsuario"></p>
-
-        <button id="botonCerrarSesion" type="button">
-            Cerrar sesión
-        </button>
-    </div>
-
-   <div id="aplicacion" class="contenedor" style="display: none;">
-
-        <h1>Lector de Facturas</h1>
-        <p>
-            Sube una fotografía o un PDF de una factura.
-        </p>
-
-        <button type="button" id="botonArchivo">
-            📁 Subir JPG / PDF
-        </button>
-
-        <input
-            type="file"
-            id="archivo"
-            accept=".jpg,.jpeg,.png,.pdf"
-            hidden
-        >
-
-        <h3>O tomar una foto</h3>
-
-        <button type="button" id="botonCamara">
-            📷 Tomar foto
-        </button>
-
-        <input
-            type="file"
-            id="camara"
-            accept="image/*"
-            capture="environment"
-            hidden
-        >
-
-        <p id="nombreArchivo">
-            Ningún archivo seleccionado
-        </p>
-
-        <button id="botonAnalizar">
-            Analizar factura
-        </button>
-
-        <button type="button" id="botonHistorial">
-            Ver historial de facturas
-        </button>
-
-        <button id="botonExcel" type="button">
-            Descargar Excel
-        </button>
-
-        <h2>Resultado</h2>
-
-        <div id="resultado">
-            Aquí aparecerá la información de la factura.
+            <p class="auth-subtitulo">
+                Digitaliza, organiza y exporta<br>
+                tus facturas con IA
+            </p>
         </div>
 
-        <script src="/static/app.js?v=2278"></script>
 
-   </div>
+        <div class="auth-tarjeta">
+
+            <h2>Iniciar sesión</h2>
+
+            <label for="loginEmail">
+                Correo electrónico
+            </label>
+
+            <input
+                type="email"
+                id="loginEmail"
+                placeholder="correo@ejemplo.com"
+                autocomplete="email"
+            >
+
+
+            <label for="loginPassword">
+                Contraseña
+            </label>
+
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Ingresa tu contraseña"
+                autocomplete="current-password"
+            >
+
+
+            <button
+                id="botonLogin"
+                class="boton-principal"
+                type="button"
+            >
+                Iniciar sesión
+            </button>
+
+
+            <p id="mensajeLogin" class="mensaje-auth"></p>
+
+
+            <div class="separador-auth">
+                <span>¿Primera vez aquí?</span>
+            </div>
+
+
+            <button
+                id="mostrarRegistro"
+                class="boton-secundario"
+                type="button"
+            >
+                Crear una cuenta
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     REGISTRO
+========================= -->
+
+<div
+    id="seccionRegistro"
+    class="pantalla-auth"
+    style="display: none;"
+>
+
+    <div class="auth-contenedor">
+
+        <div class="auth-logo">
+
+            <div class="icono-factura">▤</div>
+
+            <h1>Lector de Facturas</h1>
+
+            <p class="auth-subtitulo">
+                Crea tu cuenta y comienza<br>
+                a digitalizar tus facturas
+            </p>
+
+        </div>
+
+
+        <div class="auth-tarjeta">
+
+            <h2>Crear cuenta</h2>
+
+
+            <label for="registroNombre">
+                Nombre
+            </label>
+
+            <input
+                type="text"
+                id="registroNombre"
+                placeholder="Tu nombre"
+                autocomplete="name"
+            >
+
+
+            <label for="registroEmail">
+                Correo electrónico
+            </label>
+
+            <input
+                type="email"
+                id="registroEmail"
+                placeholder="correo@ejemplo.com"
+                autocomplete="email"
+            >
+
+
+            <label for="registroPassword">
+                Contraseña
+            </label>
+
+            <input
+                type="password"
+                id="registroPassword"
+                placeholder="Crea una contraseña"
+                autocomplete="new-password"
+            >
+
+
+            <button
+                id="botonRegistro"
+                class="boton-principal"
+                type="button"
+            >
+                Crear cuenta
+            </button>
+
+
+            <p
+                id="mensajeRegistro"
+                class="mensaje-auth"
+            ></p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+<div id="aplicacion" class="app-movil" style="display: none;">
+
+    <!-- CABECERA -->
+   <header class="app-header">
+
+        <div class="app-header-contenido">
+
+            <div class="app-marca">
+
+                <div class="app-icono">
+                    ▤
+                </div>
+
+                <div>
+                    <strong>Lector de Facturas</strong>
+                    <span>Digitaliza con IA</span>
+                </div>
+
+            </div>
+
+
+            <div
+                id="seccionUsuario"
+                class="usuario-header"
+                style="display: none;"
+            >
+
+                <p id="bienvenidaUsuario"></p>
+
+                <button
+                    id="botonCerrarSesion"
+                    type="button"
+                >
+                    Cerrar sesión
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENIDO -->
+    <main class="app-contenido">
+
+        <section class="nueva-factura">
+
+            <h1>Nueva factura</h1>
+
+            <p class="descripcion">
+                Toma una foto o sube un archivo de tu factura.
+            </p>
+
+
+            <!-- OPCIONES -->
+            <div class="opciones-carga">
+
+                <!-- CÁMARA -->
+                <button
+                    type="button"
+                    id="botonCamara"
+                    class="opcion-carga opcion-camara"
+                >
+                    <span class="opcion-icono">📷</span>
+                    <strong>Tomar foto</strong>
+                    <small>Usar cámara</small>
+                </button>
+
+                <input
+                    type="file"
+                    id="camara"
+                    accept="image/*"
+                    capture="environment"
+                    hidden
+                >
+
+
+                <!-- ARCHIVO -->
+                <button
+                    type="button"
+                    id="botonArchivo"
+                    class="opcion-carga opcion-archivo"
+                >
+                    <span class="opcion-icono">📁</span>
+                    <strong>Subir archivo</strong>
+                    <small>JPG, PNG o PDF</small>
+                </button>
+
+                <input
+                    type="file"
+                    id="archivo"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    hidden
+                >
+
+            </div>
+
+
+            <!-- ARCHIVO SELECCIONADO -->
+            <div class="archivo-seleccionado">
+
+                <span>📄</span>
+
+                <p id="nombreArchivo">
+                    Ningún archivo seleccionado
+                </p>
+
+            </div>
+
+
+            <!-- ANALIZAR -->
+            <button
+                id="botonAnalizar"
+                class="boton-analizar"
+                type="button"
+            >
+                ✨ Analizar factura
+            </button>
+
+        </section>
+
+
+        <!-- ACCIONES -->
+        <section class="acciones-secundarias">
+
+            <button
+                type="button"
+                id="botonHistorial"
+                class="boton-accion"
+            >
+                <span>🧾</span>
+                Historial
+            </button>
+
+
+            <button
+                id="botonExcel"
+                type="button"
+                class="boton-accion"
+            >
+                <span>📊</span>
+                Exportar
+            </button>
+
+        </section>
+
+
+        <!-- RESULTADO -->
+        <section class="resultado-contenedor">
+
+            <h2>Resultado del análisis</h2>
+
+            <div id="resultado">
+                Aquí aparecerá la información de la factura.
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="/static/app.js?v=22sffffd9"></script>
+
 </body>
 
 </html>
